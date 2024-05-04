@@ -10,27 +10,33 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
+use Symfony\Component\Serializer\Annotation\Groups;
+
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
 #[ApiResource(
     operations:[
         new Get(),
         new GetCollection(),
-    ]
+    ],
+    normalizationContext: ['groups' =>['category:read']]
 )]
 class Category
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['category:read','post:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['category:read','post:read'])]
     private ?string $name = null;
 
     /**
      * @var Collection<int, Post>
      */
     #[ORM\OneToMany(targetEntity: Post::class, mappedBy: 'category', orphanRemoval: true)]
+    #[Groups(['category:read'])]
     private Collection $posts;
 
     public function __construct()
